@@ -4,74 +4,70 @@
 
 class Player {
    public:
-    Player(sf::Color color, float playerWidth, float playerHeight) {
-        playerRect.setSize(sf::Vector2f(playerWidth, playerHeight));
-        playerRect.setFillColor(color);
+    Player(sf::Color color, float playerSpeed, sf::Vector2f playerSize, sf::Vector2f playerPos) {
+        this->playerRect.setFillColor(color);
+        this->playerSpeed = playerSpeed;
+        this->playerRect.setSize(playerSize);
+        this->playerRect.setPosition(playerPos);
+        this->playerDirection = sf::Vector2f(0.0f, 0.0f);
     }
+
     void horizontalMovement(sf::Keyboard::Key key, bool isPressed) {
-        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-        //     playerDirection.x = -1;
-        // } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-        //     playerDirection.x = 1;
-        // } else {
-        //     playerDirection.x = 0;
-        // }
         if (isPressed) {
             if (key == sf::Keyboard::A) {
-                playerDirection.x = -1;
+                this->playerDirection.x = -1.0f;
             } else if (key == sf::Keyboard::D) {
-                playerDirection.x = 1;
+                this->playerDirection.x = 1.0f;
             }
-        } else if (playerDirection.x != 0 &&
-                   ((key == sf::Keyboard::A && playerDirection.x == -1) ||
-                    (key == sf::Keyboard::D && playerDirection.x == 1))) {
-            playerDirection.x = 0;
+        } else {
+            if ((key == sf::Keyboard::A && this->playerDirection.x == -1.0f) || (key == sf::Keyboard::D && this->playerDirection.x == 1.0f)) {
+                this->playerDirection.x = 0.0f;
+            }
         }
     }
+
     void verticalMovement(sf::Keyboard::Key key, bool isPressed) {
-        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-        //     playerDirection.y = -1;
-        // } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-        //     playerDirection.y = 1;
-        // } else {
-        //     playerDirection.y = 0;
-        // }
         if (isPressed) {
             if (key == sf::Keyboard::W) {
-                playerDirection.y = -1;
+                this->playerDirection.y = -1.0f;
             } else if (key == sf::Keyboard::S) {
-                playerDirection.y = 1;
+                this->playerDirection.y = 1.0f;
             }
-        } else if (playerDirection.y != 0 &&
-                   ((key == sf::Keyboard::W && playerDirection.y == -1) ||
-                    (key == sf::Keyboard::S && playerDirection.y == 1))) {
-            playerDirection.y = 0;
+        } else {
+            if ((key == sf::Keyboard::W && this->playerDirection.y == -1.0f) || (key == sf::Keyboard::S && this->playerDirection.y == 1.0f)) {
+                this->playerDirection.y = 0.0f;
+            }
         }
     }
 
     void update(float deltaTime) {
-        playerRect.move(playerDirection * deltaTime * 300.f);
+        this->playerRect.move(this->playerDirection * deltaTime * this->playerSpeed);
     }
-    void draw(sf::RenderWindow &window) { window.draw(playerRect); }
+
+    void draw(sf::RenderWindow &window) { window.draw(this->playerRect); }
 
    private:
     sf::RectangleShape playerRect;
     sf::Vector2f playerDirection;
+    float playerSpeed;
 };
 
 int main() {
+    std::string windowTitle = "Game";
     int windowWidth = 1200;
     int windowHeight = 816;
-    std::string windowTitle = "Game";
-    sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight),
-                            windowTitle, sf::Style::Close);
-    window.setPosition(sf::Vector2i(100, 100));
+
+    int windowPositionX = sf::VideoMode::getDesktopMode().width / 2 - windowWidth / 2;
+    int windowPositionY = sf::VideoMode::getDesktopMode().height / 2 - windowHeight / 2;
+
+    sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), windowTitle, sf::Style::Close);
+    window.setPosition(sf::Vector2i(windowPositionX, windowPositionY));
     sf::Event event;
 
     sf::Clock clock;
     float deltaTime;
 
-    Player player(sf::Color::White, 48, 48);
+    Player player(sf::Color::White, 300.0f, sf::Vector2f(48.0f, 48.0f), sf::Vector2f(100.0f, 100.0f));
 
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
@@ -87,11 +83,9 @@ int main() {
                 player.horizontalMovement(event.key.code, false);
             }
         }
-        // update
         deltaTime = clock.restart().asSeconds();
         player.update(deltaTime);
 
-        // render
         window.clear(sf::Color(64, 64, 64, 255));
 
         player.draw(window);
