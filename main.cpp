@@ -3,25 +3,29 @@
 #include <string>
 
 class Player {
+   private:
+    sf::RectangleShape playerRect;
+    sf::Vector2f playerDirection;
+    float playerSpeed;
+
    public:
-    Player(sf::Color color, float playerSpeed, sf::Vector2f playerSize, sf::Vector2f playerPos) {
-        this->playerRect.setFillColor(color);
-        this->playerSpeed = playerSpeed;
-        this->playerRect.setSize(playerSize);
-        this->playerRect.setPosition(playerPos);
-        this->playerDirection = sf::Vector2f(0.0f, 0.0f);
+    Player(sf::Color color, float playerSpeed, sf::Vector2f playerSize, sf::Vector2f playerPos) 
+        : playerSpeed(playerSpeed), playerDirection(0.0f, 0.0f) {
+        playerRect.setFillColor(color);
+        playerRect.setSize(playerSize);
+        playerRect.setPosition(playerPos);
     }
 
     void horizontalMovement(sf::Keyboard::Key key, bool isPressed) {
         if (isPressed) {
             if (key == sf::Keyboard::A) {
-                this->playerDirection.x = -1.0f;
+                playerDirection.x = -1.0f;
             } else if (key == sf::Keyboard::D) {
-                this->playerDirection.x = 1.0f;
+                playerDirection.x = 1.0f;
             }
         } else {
-            if ((key == sf::Keyboard::A && this->playerDirection.x == -1.0f) || (key == sf::Keyboard::D && this->playerDirection.x == 1.0f)) {
-                this->playerDirection.x = 0.0f;
+            if ((key == sf::Keyboard::A && playerDirection.x == -1.0f) || (key == sf::Keyboard::D && playerDirection.x == 1.0f)) {
+                playerDirection.x = 0.0f;
             }
         }
     }
@@ -29,27 +33,24 @@ class Player {
     void verticalMovement(sf::Keyboard::Key key, bool isPressed) {
         if (isPressed) {
             if (key == sf::Keyboard::W) {
-                this->playerDirection.y = -1.0f;
+                playerDirection.y = -1.0f;
             } else if (key == sf::Keyboard::S) {
-                this->playerDirection.y = 1.0f;
+                playerDirection.y = 1.0f;
             }
         } else {
-            if ((key == sf::Keyboard::W && this->playerDirection.y == -1.0f) || (key == sf::Keyboard::S && this->playerDirection.y == 1.0f)) {
-                this->playerDirection.y = 0.0f;
+            if ((key == sf::Keyboard::W && playerDirection.y == -1.0f) || (key == sf::Keyboard::S && playerDirection.y == 1.0f)) {
+                playerDirection.y = 0.0f;
             }
         }
     }
 
     void update(float deltaTime) {
-        this->playerRect.move(this->playerDirection * deltaTime * this->playerSpeed);
+        playerRect.move(playerDirection * deltaTime * playerSpeed);
     }
 
-    void draw(sf::RenderWindow &window) { window.draw(this->playerRect); }
-
-   private:
-    sf::RectangleShape playerRect;
-    sf::Vector2f playerDirection;
-    float playerSpeed;
+    void draw(sf::RenderWindow& window) {
+        window.draw(playerRect);
+    }
 };
 
 int main() {
@@ -67,7 +68,7 @@ int main() {
     sf::Clock clock;
     float deltaTime;
 
-    Player player(sf::Color::White, 300.0f, sf::Vector2f(48.0f, 48.0f), sf::Vector2f(100.0f, 100.0f));
+    Player player(sf::Color::White, 300.0f, sf::Vector2f(48.0f, 48.0f), sf::Vector2f(48.0f, 48.0f));
 
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
