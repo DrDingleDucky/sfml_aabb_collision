@@ -16,6 +16,14 @@ class Player {
         playerRect.setPosition(playerPos);
     }
 
+    void horizontalCollisions() {
+        
+    }
+
+    void verticalCollisions() {
+
+    }
+
     void horizontalMovement(sf::Keyboard::Key key, bool isPressed) {
         if (isPressed) {
             if (key == sf::Keyboard::A) {
