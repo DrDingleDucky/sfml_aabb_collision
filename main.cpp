@@ -62,7 +62,7 @@ class Player {
             playerDirection.y = 0;
         }
 
-        playerRect.move(sf::Vector2f(0 ,playerDirection.y * deltaTime * playerSpeed));
+        playerRect.move(sf::Vector2f(0, playerDirection.y * deltaTime * playerSpeed));
     }
 
     void verticalCollisions() {
@@ -104,7 +104,9 @@ int main() {
     float deltaTime;
 
     Tile tile(sf::Color::Black, sf::Vector2f(96.0f, 96.0f), sf::Vector2f(384.0f, 384.0f));
-    Player player1(sf::Color::White, 100.0f, sf::Vector2f(48.0f, 48.0f), sf::Vector2f(48.0f, 48.0f), tile);
+    Player player1(sf::Color::Red, 225.0f, sf::Vector2f(96.0f, 96.0f), sf::Vector2f(48.0f, 48.0f), tile);
+    Player player2(sf::Color::Blue, 225.0f, sf::Vector2f(48.0f, 48.0f), sf::Vector2f(288.0f, 288.0f), tile);
+
 
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
@@ -114,10 +116,12 @@ int main() {
         }
         deltaTime = clock.restart().asSeconds();
         player1.update(deltaTime);
+        player2.update(deltaTime);
 
         window.clear(sf::Color(64, 64, 64, 255));
 
         player1.draw(window);
+        player2.draw(window);
         tile.draw(window);
 
         window.display();
