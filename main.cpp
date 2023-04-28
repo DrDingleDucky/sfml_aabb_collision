@@ -107,7 +107,6 @@ int main() {
     Player player1(sf::Color::Red, 225.0f, sf::Vector2f(96.0f, 96.0f), sf::Vector2f(48.0f, 48.0f), tile);
     Player player2(sf::Color::Blue, 225.0f, sf::Vector2f(48.0f, 48.0f), sf::Vector2f(288.0f, 288.0f), tile);
 
-
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed || sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
