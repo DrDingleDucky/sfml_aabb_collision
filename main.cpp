@@ -4,11 +4,11 @@
 
 class Player {
    private:
-    sf::RectangleShape playerRect;
-    sf::Vector2f playerDirection;
     float playerSpeed;
 
    public:
+    sf::Vector2f playerDirection;
+    sf::RectangleShape playerRect;
     Player(sf::Color playerColor, float playerSpeed, sf::Vector2f playerSize, sf::Vector2f playerPos)
         : playerSpeed(playerSpeed), playerDirection(0.0f, 0.0f) {
         playerRect.setFillColor(playerColor);
@@ -16,13 +16,13 @@ class Player {
         playerRect.setPosition(playerPos);
     }
 
-    void horizontalCollisions() {
-        
-    }
+    // void horizontalCollisions() {
 
-    void verticalCollisions() {
+    // }
 
-    }
+    // void verticalCollisions() {
+
+    // }
 
     void horizontalMovement(sf::Keyboard::Key key, bool isPressed) {
         if (isPressed) {
@@ -53,6 +53,9 @@ class Player {
     }
 
     void update(float deltaTime) {
+        // horizontalCollisions();
+        // verticalCollisions();
+
         playerRect.move(playerDirection * deltaTime * playerSpeed);
     }
 
@@ -62,10 +65,8 @@ class Player {
 };
 
 class Tile {
-   private:
-    sf::RectangleShape tileRect;
-
    public:
+    sf::RectangleShape tileRect;
     Tile(sf::Color tileColor, sf::Vector2f tileSize, sf::Vector2f tilePos) {
         tileRect.setFillColor(tileColor);
         tileRect.setSize(tileSize);
@@ -120,6 +121,22 @@ int main() {
         deltaTime = clock.restart().asSeconds();
         player1.update(deltaTime);
         player2.update(deltaTime);
+
+        if (player1.playerRect.getGlobalBounds().intersects(tile1.tileRect.getGlobalBounds())) {
+            if (player1.playerDirection.x > 0) {
+                player1.playerRect.setPosition(sf::Vector2f(tile1.tileRect.getGlobalBounds().left - player1.playerRect.getSize().x, player1.playerRect.getPosition().y));
+            } else if (player1.playerDirection.x < 0) {
+                player1.playerRect.setPosition(sf::Vector2f(tile1.tileRect.getGlobalBounds().left + tile1.tileRect.getSize().x, player1.playerRect.getPosition().y));
+            }
+        }
+
+        if (player1.playerRect.getGlobalBounds().intersects(tile1.tileRect.getGlobalBounds())) {
+            if (player1.playerDirection.y > 0) {
+                player1.playerRect.setPosition(sf::Vector2f(player1.playerRect.getPosition().x, tile1.tileRect.getGlobalBounds().top - player1.playerRect.getSize().y));
+            } else if (player1.playerDirection.y < 0) {
+                player1.playerRect.setPosition(sf::Vector2f(player1.playerRect.getPosition().x, tile1.tileRect.getGlobalBounds().top + tile1.tileRect.getSize().y));
+            }
+        }
 
         window.clear(sf::Color(64, 64, 64, 255));
 
