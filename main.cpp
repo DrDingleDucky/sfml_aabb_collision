@@ -115,7 +115,7 @@ int main() {
     float tileSizeY = 48.0f;
     float tilePosX = 48.0f;
     float tilePosY = 48.0f;
-    for (int i = 0; i < 3 ;i++) {
+    for (int i = 0; i < 3; i++) {
         tileSizeX = tileSizeX + 24.0f;
         tileSizeY = tileSizeY + 48.0f;
         tilePosX = tilePosX + 96.0f;
