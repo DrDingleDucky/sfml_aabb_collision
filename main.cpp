@@ -34,7 +34,9 @@ class Player {
     }
 
     void horizontalMovement(float deltaTime) {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+            playerDirection.x = 0;
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
             playerDirection.x = -1;
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
             playerDirection.x = 1;
@@ -58,7 +60,9 @@ class Player {
     }
 
     void verticalMovement(float deltaTime) {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+            playerDirection.y = 0;
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
             playerDirection.y = -1;
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
             playerDirection.y = 1;
