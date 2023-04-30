@@ -1,3 +1,3 @@
-# SFML Test
+# SFML aabb
 
-Playing around with SFML.
+Top-down collision in SFML.
