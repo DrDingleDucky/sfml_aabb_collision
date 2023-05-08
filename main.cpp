@@ -4,7 +4,7 @@
 #include <vector>
 
 class Tile {
-   public:
+public:
     sf::RectangleShape tileRect;
     Tile(sf::Color tileColor, sf::Vector2f tileSize, sf::Vector2f tilePos) {
         tileRect.setFillColor(tileColor);
@@ -12,29 +12,33 @@ class Tile {
         tileRect.setPosition(tilePos);
     }
 
-    void draw(sf::RenderWindow& window) {
-        window.draw(tileRect);
-    }
+    void draw(sf::RenderWindow& window) { window.draw(tileRect); }
 };
 
 class Player {
-   private:
+private:
     float playerSpeed;
-    std::vector<Tile> tileGroup;
-
-   public:
     sf::Vector2f playerDirection;
     sf::RectangleShape playerRect;
-    Player(sf::Color playerColor, float playerSpeed, sf::Vector2f playerSize, sf::Vector2f playerPos, std::vector<Tile>& vector)
-        : playerSpeed(playerSpeed), playerDirection(0.0f, 0.0f) {
-        tileGroup = vector;
+    std::vector<Tile> tileGroup;
+
+public:
+    Player(
+        sf::Color playerColor,
+        float playerSpeed,
+        sf::Vector2f playerSize,
+        sf::Vector2f playerPos, std::vector<Tile>& tileGroup)
+        : playerSpeed(playerSpeed)
+        , playerDirection(0.0f, 0.0f)
+        , tileGroup(tileGroup) {
         playerRect.setFillColor(playerColor);
         playerRect.setSize(playerSize);
         playerRect.setPosition(playerPos);
     }
 
     void horizontalMovement(float deltaTime) {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)
+            && sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
             playerDirection.x = 0;
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
             playerDirection.x = -1;
@@ -51,16 +55,21 @@ class Player {
         for (auto& tile : tileGroup) {
             if (playerRect.getGlobalBounds().intersects(tile.tileRect.getGlobalBounds())) {
                 if (playerDirection.x > 0) {
-                    playerRect.setPosition(sf::Vector2f(tile.tileRect.getGlobalBounds().left - playerRect.getSize().x, playerRect.getPosition().y));
+                    playerRect.setPosition(sf::Vector2f(
+                        tile.tileRect.getGlobalBounds().left - playerRect.getSize().x,
+                        playerRect.getPosition().y));
                 } else if (playerDirection.x < 0) {
-                    playerRect.setPosition(sf::Vector2f(tile.tileRect.getGlobalBounds().left + tile.tileRect.getSize().x, playerRect.getPosition().y));
+                    playerRect.setPosition(sf::Vector2f(
+                        tile.tileRect.getGlobalBounds().left + tile.tileRect.getSize().x,
+                        playerRect.getPosition().y));
                 }
             }
         }
     }
 
     void verticalMovement(float deltaTime) {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)
+            && sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
             playerDirection.y = 0;
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
             playerDirection.y = -1;
@@ -77,9 +86,13 @@ class Player {
         for (auto& tile : tileGroup) {
             if (playerRect.getGlobalBounds().intersects(tile.tileRect.getGlobalBounds())) {
                 if (playerDirection.y > 0) {
-                    playerRect.setPosition(sf::Vector2f(playerRect.getPosition().x, tile.tileRect.getGlobalBounds().top - playerRect.getSize().y));
+                    playerRect.setPosition(sf::Vector2f(
+                        playerRect.getPosition().x,
+                        tile.tileRect.getGlobalBounds().top - playerRect.getSize().y));
                 } else if (playerDirection.y < 0) {
-                    playerRect.setPosition(sf::Vector2f(playerRect.getPosition().x, tile.tileRect.getGlobalBounds().top + tile.tileRect.getSize().y));
+                    playerRect.setPosition(sf::Vector2f(
+                        playerRect.getPosition().x,
+                        tile.tileRect.getGlobalBounds().top + tile.tileRect.getSize().y));
                 }
             }
         }
@@ -93,9 +106,7 @@ class Player {
         verticalCollisions();
     }
 
-    void draw(sf::RenderWindow& window) {
-        window.draw(playerRect);
-    }
+    void draw(sf::RenderWindow& window) { window.draw(playerRect); }
 };
 
 int main() {
@@ -106,7 +117,10 @@ int main() {
     int windowPositionX = sf::VideoMode::getDesktopMode().width / 2 - windowWidth / 2;
     int windowPositionY = sf::VideoMode::getDesktopMode().height / 2 - windowHeight / 2;
 
-    sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), windowTitle, sf::Style::Close);
+    sf::RenderWindow window(
+        sf::VideoMode(windowWidth, windowHeight),
+        windowTitle,
+        sf::Style::Close);
     window.setPosition(sf::Vector2i(windowPositionX, windowPositionY));
     sf::Event event;
 
@@ -125,20 +139,33 @@ int main() {
         tilePosX = tilePosX + 96.0f;
         tilePosY = tilePosY + 144.0f;
 
-        tileGroup.push_back(Tile(sf::Color::Black, sf::Vector2f(tileSizeX, tileSizeY), sf::Vector2f(tilePosX, tilePosY)));
+        tileGroup.push_back(Tile(sf::Color::Black,
+            sf::Vector2f(tileSizeX, tileSizeY),
+            sf::Vector2f(tilePosX, tilePosY)));
 
         tileSizeX = tileSizeX - 24;
         tileSizeY = tileSizeY + 48;
         tilePosX = (tilePosX - 96.0f) + 288.0f;
         tilePosY = (tilePosY - 144.0f) + 96.0f;
 
-        tileGroup.push_back(Tile(sf::Color::Black, sf::Vector2f(tileSizeX, tileSizeY), sf::Vector2f(tilePosX, tilePosY)));
+        tileGroup.push_back(Tile(sf::Color::Black,
+            sf::Vector2f(tileSizeX, tileSizeY),
+            sf::Vector2f(tilePosX, tilePosY)));
     }
 
-    tileGroup.push_back(Tile(sf::Color::Black, sf::Vector2f(288, 96), sf::Vector2f(96, 480)));
-    tileGroup.push_back(Tile(sf::Color::Black, sf::Vector2f(288, 96), sf::Vector2f(600, 96)));
+    tileGroup.push_back(Tile(sf::Color::Black,
+        sf::Vector2f(288, 96),
+        sf::Vector2f(96, 480)));
+    tileGroup.push_back(Tile(sf::Color::Black,
+        sf::Vector2f(288, 96),
+        sf::Vector2f(600, 96)));
 
-    Player player(sf::Color::White, 225.0f, sf::Vector2f(48.0f, 48.0f), sf::Vector2f(48.0f, 48.0f), tileGroup);
+    Player player(
+        sf::Color::White, // player color
+        225.0f, // player speed
+        sf::Vector2f(48.0f, 48.0f), // player size
+        sf::Vector2f(48.0f, 96.0f), // player position
+        tileGroup);
 
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
@@ -146,7 +173,9 @@ int main() {
                 window.close();
             }
         }
+
         deltaTime = clock.restart().asSeconds();
+
         player.update(deltaTime);
 
         window.clear(sf::Color(64, 64, 64, 255));
