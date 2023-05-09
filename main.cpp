@@ -132,8 +132,8 @@ int main() {
 
     float tileSizeX = 48.0f;
     float tileSizeY = 48.0f;
-    float tilePosX = 48.0f;
-    float tilePosY = 48.0f;
+    float tilePosX = -336.0f;
+    float tilePosY = -48.0f;
     for (int i = 0; i < 3; i++) {
         tileSizeX = tileSizeX + 24.0f;
         tileSizeY = tileSizeY + 48.0f;
@@ -156,10 +156,10 @@ int main() {
 
     tileGroup.push_back(Tile(sf::Color::Black,
         sf::Vector2f(288, 96),
-        sf::Vector2f(96, 480)));
+        sf::Vector2f(-288, 480)));
     tileGroup.push_back(Tile(sf::Color::Black,
         sf::Vector2f(288, 96),
-        sf::Vector2f(600, 96)));
+        sf::Vector2f(216, 96)));
 
     Player player(
         sf::Color::White, // player color
@@ -178,8 +178,8 @@ int main() {
         deltaTime = clock.restart().asSeconds();
 
         window.setView(sf::View(sf::FloatRect(
-            player.playerRect.getPosition().x - window.getSize().x / 2.0f,
-            player.playerRect.getPosition().y - window.getSize().y / 2.0f,
+            player.playerRect.getPosition().x + player.playerRect.getSize().x / 2 - window.getSize().x / 2.0f,
+            player.playerRect.getPosition().y + player.playerRect.getSize().y / 2 - window.getSize().y / 2.0f,
             windowWidth,
             windowHeight)));
 
