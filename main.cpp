@@ -19,10 +19,11 @@ class Player {
 private:
     float playerSpeed;
     sf::Vector2f playerDirection;
-    sf::RectangleShape playerRect;
     std::vector<Tile> tileGroup;
 
 public:
+    sf::RectangleShape playerRect;
+
     Player(
         sf::Color playerColor,
         float playerSpeed,
@@ -175,6 +176,12 @@ int main() {
         }
 
         deltaTime = clock.restart().asSeconds();
+
+        window.setView(sf::View(sf::FloatRect(
+            player.playerRect.getPosition().x - window.getSize().x / 2.0f,
+            player.playerRect.getPosition().y - window.getSize().y / 2.0f,
+            windowWidth,
+            windowHeight)));
 
         player.update(deltaTime);
 
