@@ -6,13 +6,17 @@
 class Tile {
 public:
     sf::RectangleShape tileRect;
-    Tile(sf::Color tileColor, sf::Vector2f tileSize, sf::Vector2f tilePos) {
+    Tile(sf::Color tileColor,
+         sf::Vector2f tileSize,
+         sf::Vector2f tilePos) {
         tileRect.setFillColor(tileColor);
         tileRect.setSize(tileSize);
         tileRect.setPosition(tilePos);
     }
 
-    void draw(sf::RenderWindow& window) { window.draw(tileRect); }
+    void draw(sf::RenderWindow &window) {
+        window.draw(tileRect);
+    }
 };
 
 class Player {
@@ -28,38 +32,39 @@ public:
         sf::Color playerColor,
         float playerSpeed,
         sf::Vector2f playerSize,
-        sf::Vector2f playerPos, std::vector<Tile>& tileGroup)
-        : playerSpeed(playerSpeed)
-        , playerDirection(0.0f, 0.0f)
-        , tileGroup(tileGroup) {
+        sf::Vector2f playerPos,
+        std::vector<Tile> &tileGroup)
+        : playerSpeed(playerSpeed),
+          playerDirection(0.0f, 0.0f),
+          tileGroup(tileGroup) {
         playerRect.setFillColor(playerColor);
         playerRect.setSize(playerSize);
         playerRect.setPosition(playerPos);
     }
 
     void horizontalMovement(float deltaTime) {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)
-            && sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-            playerDirection.x = 0;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) &&
+            sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+            playerDirection.x = 0.0f;
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-            playerDirection.x = -1;
+            playerDirection.x = -1.0f;
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-            playerDirection.x = 1;
+            playerDirection.x = 1.0f;
         } else {
-            playerDirection.x = 0;
+            playerDirection.x = 0.0f;
         }
 
         playerRect.move(sf::Vector2f(playerDirection.x * deltaTime * playerSpeed, 0.0f));
     }
 
     void horizontalCollisions() {
-        for (auto& tile : tileGroup) {
+        for (auto &tile : tileGroup) {
             if (playerRect.getGlobalBounds().intersects(tile.tileRect.getGlobalBounds())) {
-                if (playerDirection.x > 0) {
+                if (playerDirection.x > 0.0f) {
                     playerRect.setPosition(sf::Vector2f(
                         tile.tileRect.getGlobalBounds().left - playerRect.getSize().x,
                         playerRect.getPosition().y));
-                } else if (playerDirection.x < 0) {
+                } else if (playerDirection.x < 0.0f) {
                     playerRect.setPosition(sf::Vector2f(
                         tile.tileRect.getGlobalBounds().left + tile.tileRect.getSize().x,
                         playerRect.getPosition().y));
@@ -69,28 +74,28 @@ public:
     }
 
     void verticalMovement(float deltaTime) {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)
-            && sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-            playerDirection.y = 0;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) &&
+            sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+            playerDirection.y = 0.0f;
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-            playerDirection.y = -1;
+            playerDirection.y = -1.0f;
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-            playerDirection.y = 1;
+            playerDirection.y = 1.0f;
         } else {
-            playerDirection.y = 0;
+            playerDirection.y = 0.0f;
         }
 
-        playerRect.move(sf::Vector2f(0, playerDirection.y * deltaTime * playerSpeed));
+        playerRect.move(sf::Vector2f(0.0f, playerDirection.y * deltaTime * playerSpeed));
     }
 
     void verticalCollisions() {
-        for (auto& tile : tileGroup) {
+        for (auto &tile : tileGroup) {
             if (playerRect.getGlobalBounds().intersects(tile.tileRect.getGlobalBounds())) {
-                if (playerDirection.y > 0) {
+                if (playerDirection.y > 0.0f) {
                     playerRect.setPosition(sf::Vector2f(
                         playerRect.getPosition().x,
                         tile.tileRect.getGlobalBounds().top - playerRect.getSize().y));
-                } else if (playerDirection.y < 0) {
+                } else if (playerDirection.y < 0.0f) {
                     playerRect.setPosition(sf::Vector2f(
                         playerRect.getPosition().x,
                         tile.tileRect.getGlobalBounds().top + tile.tileRect.getSize().y));
@@ -99,15 +104,27 @@ public:
         }
     }
 
-    void update(float deltaTime) {
+    void camera(sf::RenderWindow &window) {
+        window.setView(sf::View(sf::FloatRect(
+            playerRect.getPosition().x +
+                playerRect.getSize().x / 2.0f - window.getSize().x / 2.0f,
+            playerRect.getPosition().y +
+                playerRect.getSize().y / 2.0f - window.getSize().y / 2.0f,
+            window.getSize().x,
+            window.getSize().y)));
+    }
+
+    void update(sf::RenderWindow &window, float deltaTime) {
         horizontalMovement(deltaTime);
         horizontalCollisions();
 
         verticalMovement(deltaTime);
         verticalCollisions();
+
+        camera(window);
     }
 
-    void draw(sf::RenderWindow& window) { window.draw(playerRect); }
+    void draw(sf::RenderWindow &window) { window.draw(playerRect); }
 };
 
 int main() {
@@ -141,55 +158,50 @@ int main() {
         tilePosY = tilePosY + 144.0f;
 
         tileGroup.push_back(Tile(sf::Color::Black,
-            sf::Vector2f(tileSizeX, tileSizeY),
-            sf::Vector2f(tilePosX, tilePosY)));
+                                 sf::Vector2f(tileSizeX, tileSizeY),
+                                 sf::Vector2f(tilePosX, tilePosY)));
 
-        tileSizeX = tileSizeX - 24;
-        tileSizeY = tileSizeY + 48;
+        tileSizeX = tileSizeX - 24.0f;
+        tileSizeY = tileSizeY + 48.0f;
         tilePosX = (tilePosX - 96.0f) + 288.0f;
         tilePosY = (tilePosY - 144.0f) + 96.0f;
 
         tileGroup.push_back(Tile(sf::Color::Black,
-            sf::Vector2f(tileSizeX, tileSizeY),
-            sf::Vector2f(tilePosX, tilePosY)));
+                                 sf::Vector2f(tileSizeX, tileSizeY),
+                                 sf::Vector2f(tilePosX, tilePosY)));
     }
 
     tileGroup.push_back(Tile(sf::Color::Black,
-        sf::Vector2f(288, 96),
-        sf::Vector2f(-288, 480)));
+                             sf::Vector2f(288.0f, 96.0f),
+                             sf::Vector2f(-288, 480)));
     tileGroup.push_back(Tile(sf::Color::Black,
-        sf::Vector2f(288, 96),
-        sf::Vector2f(216, 96)));
+                             sf::Vector2f(288, 96),
+                             sf::Vector2f(216, 96)));
 
     Player player(
-        sf::Color::White, // player color
-        225.0f, // player speed
+        sf::Color::White,           // player color
+        225.0f,                     // player speed
         sf::Vector2f(48.0f, 48.0f), // player size
         sf::Vector2f(48.0f, 96.0f), // player position
         tileGroup);
 
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed || sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+            if (event.type == sf::Event::Closed ||
+                sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
                 window.close();
             }
         }
 
         deltaTime = clock.restart().asSeconds();
 
-        window.setView(sf::View(sf::FloatRect(
-            player.playerRect.getPosition().x + player.playerRect.getSize().x / 2 - window.getSize().x / 2.0f,
-            player.playerRect.getPosition().y + player.playerRect.getSize().y / 2 - window.getSize().y / 2.0f,
-            windowWidth,
-            windowHeight)));
-
-        player.update(deltaTime);
+        player.update(window, deltaTime);
 
         window.clear(sf::Color(64, 64, 64, 255));
 
         player.draw(window);
 
-        for (auto& tile : tileGroup) {
+        for (auto &tile : tileGroup) {
             tile.draw(window);
         }
 
