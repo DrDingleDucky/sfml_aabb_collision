@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -105,13 +106,41 @@ public:
     }
 
     void camera(sf::RenderWindow &window) {
-        window.setView(sf::View(sf::FloatRect(
-            playerRect.getPosition().x +
-                playerRect.getSize().x / 2.0f - window.getSize().x / 2.0f,
-            playerRect.getPosition().y +
-                playerRect.getSize().y / 2.0f - window.getSize().y / 2.0f,
-            window.getSize().x,
-            window.getSize().y)));
+        // follow camera
+        // window.setView(sf::View(sf::FloatRect(
+        //     playerRect.getPosition().x +
+        //         playerRect.getSize().x / 2.0f - window.getSize().x / 2.0f,
+        //     playerRect.getPosition().y +
+        //         playerRect.getSize().y / 2.0f - window.getSize().y / 2.0f,
+        //     window.getSize().x,
+        //     window.getSize().y)));
+
+        // other camera
+        if (playerRect.getPosition().x + playerRect.getSize().x / 2.0f <
+            window.getView().getCenter().x - window.getSize().x / 2.0f) {
+            window.setView(sf::View(sf::FloatRect(
+                window.getView().getCenter().x - window.getSize().x / 2.0f * 3.0f,
+                window.getView().getCenter().y - window.getSize().y / 2.0f,
+                window.getSize().x, window.getSize().y)));
+        } else if (playerRect.getPosition().x + playerRect.getSize().x / 2.0f >
+                   window.getView().getCenter().x + window.getSize().x / 2.0f) {
+            window.setView(sf::View(sf::FloatRect(
+                window.getView().getCenter().x + window.getSize().x / 2.0f * 3.0f,
+                window.getView().getCenter().y + window.getSize().y / 2.0f,
+                window.getSize().x, window.getSize().y)));
+        } else if (playerRect.getPosition().y + playerRect.getSize().y / 2.0f <
+                   window.getView().getCenter().y - window.getSize().y / 2.0f) {
+            window.setView(sf::View(sf::FloatRect(
+                window.getView().getCenter().x + window.getSize().x / 2.0f,
+                window.getView().getCenter().y - window.getSize().y / 2.0f * 3.0f,
+                window.getSize().x, window.getSize().y)));
+        } else if (playerRect.getPosition().y + playerRect.getSize().y / 2.0f >
+                   window.getView().getCenter().y + window.getSize().y / 2.0f) {
+            window.setView(sf::View(sf::FloatRect(
+                window.getView().getCenter().x - window.getSize().x / 2.0f,
+                window.getView().getCenter().y + window.getSize().y / 2.0f * 3.0f,
+                window.getSize().x, window.getSize().y)));
+        }
     }
 
     void update(sf::RenderWindow &window, float deltaTime) {
@@ -126,6 +155,38 @@ public:
 
     void draw(sf::RenderWindow &window) { window.draw(playerRect); }
 };
+
+void loadLevel(float &playerPositionX, float &playerPositionY, std::vector<Tile> &tileGroup) {
+    std::ifstream file("map.txt");
+    std::string line;
+
+    float x;
+    float y;
+
+    if (file.is_open()) {
+        float row_index = 0.0f;
+        while (std::getline(file, line)) {
+            for (float collom_index = 0.0f; collom_index < line.length(); collom_index++) {
+                x = collom_index * 48.0f;
+                y = row_index * 48.0f;
+
+                if (line[collom_index] == 't') { // t - tile
+                    tileGroup.push_back(Tile(
+                        sf::Color::Black,
+                        sf::Vector2f(48.0f, 48.0f),
+                        sf::Vector2f(x, y)));
+                } else if (line[collom_index] == 'p') { // p - player
+                    playerPositionX = x;
+                    playerPositionY = y;
+                }
+            }
+            row_index++;
+        }
+    } else {
+        std::cout << "error: can't open 'map.txt'\n";
+        exit(1);
+    }
+}
 
 int main() {
     std::string windowTitle = "Game";
@@ -147,42 +208,16 @@ int main() {
 
     std::vector<Tile> tileGroup;
 
-    float tileSizeX = 48.0f;
-    float tileSizeY = 48.0f;
-    float tilePosX = -336.0f;
-    float tilePosY = -48.0f;
-    for (int i = 0; i < 3; i++) {
-        tileSizeX = tileSizeX + 24.0f;
-        tileSizeY = tileSizeY + 48.0f;
-        tilePosX = tilePosX + 96.0f;
-        tilePosY = tilePosY + 144.0f;
+    float playerPositionX;
+    float playerPositionY;
 
-        tileGroup.push_back(Tile(sf::Color::Black,
-                                 sf::Vector2f(tileSizeX, tileSizeY),
-                                 sf::Vector2f(tilePosX, tilePosY)));
-
-        tileSizeX = tileSizeX - 24.0f;
-        tileSizeY = tileSizeY + 48.0f;
-        tilePosX = (tilePosX - 96.0f) + 288.0f;
-        tilePosY = (tilePosY - 144.0f) + 96.0f;
-
-        tileGroup.push_back(Tile(sf::Color::Black,
-                                 sf::Vector2f(tileSizeX, tileSizeY),
-                                 sf::Vector2f(tilePosX, tilePosY)));
-    }
-
-    tileGroup.push_back(Tile(sf::Color::Black,
-                             sf::Vector2f(288.0f, 96.0f),
-                             sf::Vector2f(-288, 480)));
-    tileGroup.push_back(Tile(sf::Color::Black,
-                             sf::Vector2f(288, 96),
-                             sf::Vector2f(216, 96)));
+    loadLevel(playerPositionX, playerPositionY, tileGroup);
 
     Player player(
-        sf::Color::White,           // player color
-        225.0f,                     // player speed
-        sf::Vector2f(48.0f, 48.0f), // player size
-        sf::Vector2f(48.0f, 96.0f), // player position
+        sf::Color::White,                               // player color
+        225.0f,                                         // player speed
+        sf::Vector2f(48.0f, 48.0f),                     // player size
+        sf::Vector2f(playerPositionX, playerPositionY), // player position
         tileGroup);
 
     while (window.isOpen()) {
