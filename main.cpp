@@ -6,141 +6,45 @@
 
 class Tile {
 public:
-    sf::RectangleShape tileRect;
-    Tile(sf::Color tileColor,
-         sf::Vector2f tileSize,
-         sf::Vector2f tilePos) {
-        tileRect.setFillColor(tileColor);
-        tileRect.setSize(tileSize);
-        tileRect.setPosition(tilePos);
+    sf::RectangleShape m_rectangle;
+    Tile(sf::Color color,
+         sf::Vector2f size,
+         sf::Vector2f position)
+        : m_color(color),
+          m_size(size),
+          m_startPosition(position) {
+        m_rectangle.setFillColor(m_color);
+        m_rectangle.setSize(m_size);
+        m_rectangle.setPosition(m_startPosition);
     }
 
     void draw(sf::RenderWindow &window) {
-        window.draw(tileRect);
+        window.draw(m_rectangle);
     }
+
+private:
+    sf::Color m_color;
+    sf::Vector2f m_size;
+    sf::Vector2f m_startPosition;
 };
 
 class Player {
-private:
-    float playerSpeed;
-    sf::Vector2f playerDirection;
-    std::vector<Tile> tileGroup;
-
 public:
-    sf::RectangleShape playerRect;
-
     Player(
-        sf::Color playerColor,
-        float playerSpeed,
-        sf::Vector2f playerSize,
-        sf::Vector2f playerPos,
+        sf::Color color,
+        float speed,
+        sf::Vector2f size,
+        sf::Vector2f position,
         std::vector<Tile> &tileGroup)
-        : playerSpeed(playerSpeed),
-          playerDirection(0.0f, 0.0f),
-          tileGroup(tileGroup) {
-        playerRect.setFillColor(playerColor);
-        playerRect.setSize(playerSize);
-        playerRect.setPosition(playerPos);
-    }
-
-    void horizontalMovement(float deltaTime) {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) &&
-            sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-            playerDirection.x = 0.0f;
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-            playerDirection.x = -1.0f;
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-            playerDirection.x = 1.0f;
-        } else {
-            playerDirection.x = 0.0f;
-        }
-
-        playerRect.move(sf::Vector2f(playerDirection.x * deltaTime * playerSpeed, 0.0f));
-    }
-
-    void horizontalCollisions() {
-        for (auto &tile : tileGroup) {
-            if (playerRect.getGlobalBounds().intersects(tile.tileRect.getGlobalBounds())) {
-                if (playerDirection.x > 0.0f) {
-                    playerRect.setPosition(sf::Vector2f(
-                        tile.tileRect.getGlobalBounds().left - playerRect.getSize().x,
-                        playerRect.getPosition().y));
-                } else if (playerDirection.x < 0.0f) {
-                    playerRect.setPosition(sf::Vector2f(
-                        tile.tileRect.getGlobalBounds().left + tile.tileRect.getSize().x,
-                        playerRect.getPosition().y));
-                }
-            }
-        }
-    }
-
-    void verticalMovement(float deltaTime) {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) &&
-            sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-            playerDirection.y = 0.0f;
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-            playerDirection.y = -1.0f;
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-            playerDirection.y = 1.0f;
-        } else {
-            playerDirection.y = 0.0f;
-        }
-
-        playerRect.move(sf::Vector2f(0.0f, playerDirection.y * deltaTime * playerSpeed));
-    }
-
-    void verticalCollisions() {
-        for (auto &tile : tileGroup) {
-            if (playerRect.getGlobalBounds().intersects(tile.tileRect.getGlobalBounds())) {
-                if (playerDirection.y > 0.0f) {
-                    playerRect.setPosition(sf::Vector2f(
-                        playerRect.getPosition().x,
-                        tile.tileRect.getGlobalBounds().top - playerRect.getSize().y));
-                } else if (playerDirection.y < 0.0f) {
-                    playerRect.setPosition(sf::Vector2f(
-                        playerRect.getPosition().x,
-                        tile.tileRect.getGlobalBounds().top + tile.tileRect.getSize().y));
-                }
-            }
-        }
-    }
-
-    void camera(sf::RenderWindow &window) {
-        // follow camera
-        // window.setView(sf::View(sf::FloatRect(
-        //     playerRect.getPosition().x +
-        //         playerRect.getSize().x / 2.0f - window.getSize().x / 2.0f,
-        //     playerRect.getPosition().y +
-        //         playerRect.getSize().y / 2.0f - window.getSize().y / 2.0f,
-        //     window.getSize().x,
-        //     window.getSize().y)));
-
-        // other camera
-        if (playerRect.getPosition().x + playerRect.getSize().x / 2.0f <
-            window.getView().getCenter().x - window.getSize().x / 2.0f) {
-            window.setView(sf::View(sf::FloatRect(
-                window.getView().getCenter().x - window.getSize().x / 2.0f * 3.0f,
-                window.getView().getCenter().y - window.getSize().y / 2.0f,
-                window.getSize().x, window.getSize().y)));
-        } else if (playerRect.getPosition().x + playerRect.getSize().x / 2.0f >
-                   window.getView().getCenter().x + window.getSize().x / 2.0f) {
-            window.setView(sf::View(sf::FloatRect(
-                window.getView().getCenter().x + window.getSize().x / 2.0f * 3.0f,
-                window.getView().getCenter().y + window.getSize().y / 2.0f,
-                window.getSize().x, window.getSize().y)));
-        } else if (playerRect.getPosition().y + playerRect.getSize().y / 2.0f <
-                   window.getView().getCenter().y - window.getSize().y / 2.0f) {
-            window.setView(sf::View(sf::FloatRect(
-                window.getView().getCenter().x + window.getSize().x / 2.0f,
-                window.getView().getCenter().y - window.getSize().y / 2.0f * 3.0f,
-                window.getSize().x, window.getSize().y)));
-        } else if (playerRect.getPosition().y + playerRect.getSize().y / 2.0f >
-                   window.getView().getCenter().y + window.getSize().y / 2.0f) {
-            window.setView(sf::View(sf::FloatRect(
-                window.getView().getCenter().x - window.getSize().x / 2.0f,
-                window.getView().getCenter().y + window.getSize().y / 2.0f * 3.0f,
-                window.getSize().x, window.getSize().y)));
-        }
+        : m_color(color),
+          m_speed(speed),
+          m_size(size),
+          m_position(position),
+          m_tileGroup(tileGroup),
+          m_direction(0.0f, 0.0f) {
+        m_rectangle.setFillColor(m_color);
+        m_rectangle.setSize(m_size);
+        m_rectangle.setPosition(m_position);
     }
 
     void update(sf::RenderWindow &window, float deltaTime) {
@@ -153,11 +57,116 @@ public:
         camera(window);
     }
 
-    void draw(sf::RenderWindow &window) { window.draw(playerRect); }
+    void draw(sf::RenderWindow &window) {
+        window.draw(m_rectangle);
+    }
+
+private:
+    sf::Color m_color;
+    float m_speed;
+    sf::Vector2f m_size;
+    sf::Vector2f m_position;
+    std::vector<Tile> m_tileGroup;
+
+    sf::Vector2f m_direction;
+    sf::RectangleShape m_rectangle;
+
+    void horizontalMovement(float deltaTime) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) &&
+            sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+            m_direction.x = 0.0f;
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+            m_direction.x = -1.0f;
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+            m_direction.x = 1.0f;
+        } else {
+            m_direction.x = 0.0f;
+        }
+
+        m_rectangle.move(sf::Vector2f(m_direction.x * deltaTime * m_speed, 0.0f));
+    }
+
+    void horizontalCollisions() {
+        for (auto &tile : m_tileGroup) {
+            if (m_rectangle.getGlobalBounds().intersects(tile.m_rectangle.getGlobalBounds())) {
+                if (m_direction.x > 0.0f) {
+                    m_rectangle.setPosition(sf::Vector2f(
+                        tile.m_rectangle.getGlobalBounds().left - m_rectangle.getSize().x,
+                        m_rectangle.getPosition().y));
+                } else if (m_direction.x < 0.0f) {
+                    m_rectangle.setPosition(sf::Vector2f(
+                        tile.m_rectangle.getGlobalBounds().left + tile.m_rectangle.getSize().x,
+                        m_rectangle.getPosition().y));
+                }
+            }
+        }
+    }
+
+    void verticalMovement(float deltaTime) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) &&
+            sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+            m_direction.y = 0.0f;
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+            m_direction.y = -1.0f;
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+            m_direction.y = 1.0f;
+        } else {
+            m_direction.y = 0.0f;
+        }
+
+        m_rectangle.move(sf::Vector2f(0.0f, m_direction.y * deltaTime * m_speed));
+    }
+
+    void verticalCollisions() {
+        for (auto &tile : m_tileGroup) {
+            if (m_rectangle.getGlobalBounds().intersects(tile.m_rectangle.getGlobalBounds())) {
+                if (m_direction.y > 0.0f) {
+                    m_rectangle.setPosition(sf::Vector2f(
+                        m_rectangle.getPosition().x,
+                        tile.m_rectangle.getGlobalBounds().top - m_rectangle.getSize().y));
+                } else if (m_direction.y < 0.0f) {
+                    m_rectangle.setPosition(sf::Vector2f(
+                        m_rectangle.getPosition().x,
+                        tile.m_rectangle.getGlobalBounds().top + tile.m_rectangle.getSize().y));
+                }
+            }
+        }
+    }
+
+    void camera(sf::RenderWindow &window) {
+        if (m_rectangle.getPosition().x + m_rectangle.getSize().x / 2.0f <
+            window.getView().getCenter().x - window.getSize().x / 2.0f) {
+            window.setView(sf::View(sf::FloatRect(
+                window.getView().getCenter().x - window.getSize().x / 2.0f * 3.0f,
+                window.getView().getCenter().y - window.getSize().y / 2.0f,
+                window.getSize().x, window.getSize().y)));
+        } else if (m_rectangle.getPosition().x + m_rectangle.getSize().x / 2.0f >
+                   window.getView().getCenter().x + window.getSize().x / 2.0f) {
+            window.setView(sf::View(sf::FloatRect(
+                window.getView().getCenter().x + window.getSize().x / 2.0f * 3.0f,
+                window.getView().getCenter().y + window.getSize().y / 2.0f,
+                window.getSize().x, window.getSize().y)));
+        } else if (m_rectangle.getPosition().y + m_rectangle.getSize().y / 2.0f <
+                   window.getView().getCenter().y - window.getSize().y / 2.0f) {
+            window.setView(sf::View(sf::FloatRect(
+                window.getView().getCenter().x + window.getSize().x / 2.0f,
+                window.getView().getCenter().y - window.getSize().y / 2.0f * 3.0f,
+                window.getSize().x, window.getSize().y)));
+        } else if (m_rectangle.getPosition().y + m_rectangle.getSize().y / 2.0f >
+                   window.getView().getCenter().y + window.getSize().y / 2.0f) {
+            window.setView(sf::View(sf::FloatRect(
+                window.getView().getCenter().x - window.getSize().x / 2.0f,
+                window.getView().getCenter().y + window.getSize().y / 2.0f * 3.0f,
+                window.getSize().x, window.getSize().y)));
+        }
+    }
 };
 
-void loadLevel(float &playerPositionX, float &playerPositionY, std::vector<Tile> &tileGroup) {
-    std::ifstream file("map.txt");
+void loadLevel(std::string map,
+               float &playerPositionX,
+               float &playerPositionY,
+               std::vector<Tile> &tileGroup) {
+    std::ifstream file(map);
     std::string line;
 
     float x;
@@ -189,19 +198,19 @@ void loadLevel(float &playerPositionX, float &playerPositionY, std::vector<Tile>
 }
 
 int main() {
-    std::string windowTitle = "Game";
+    std::string windowTitle = "sfml aabb collision";
     int windowWidth = 1200;
     int windowHeight = 816;
 
-    int windowPositionX = sf::VideoMode::getDesktopMode().width / 2 - windowWidth / 2;
-    int windowPositionY = sf::VideoMode::getDesktopMode().height / 2 - windowHeight / 2;
+    int windowPositionX = sf::VideoMode::getDesktopMode().width / 2 -
+                          windowWidth / 2;
+    int windowPositionY = sf::VideoMode::getDesktopMode().height / 2 -
+                          windowHeight / 2;
 
-    sf::RenderWindow window(
-        sf::VideoMode(windowWidth, windowHeight),
-        windowTitle,
-        sf::Style::Close);
+    sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight),
+                            windowTitle,
+                            sf::Style::Close);
     window.setPosition(sf::Vector2i(windowPositionX, windowPositionY));
-    sf::Event event;
 
     sf::Clock clock;
     float deltaTime;
@@ -211,7 +220,10 @@ int main() {
     float playerPositionX;
     float playerPositionY;
 
-    loadLevel(playerPositionX, playerPositionY, tileGroup);
+    loadLevel(std::string("map.txt"),
+              playerPositionX,
+              playerPositionY,
+              tileGroup);
 
     Player player(
         sf::Color::White,                               // player color
@@ -221,6 +233,8 @@ int main() {
         tileGroup);
 
     while (window.isOpen()) {
+        sf::Event event;
+
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed ||
                 sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
@@ -232,13 +246,13 @@ int main() {
 
         player.update(window, deltaTime);
 
-        window.clear(sf::Color(64, 64, 64, 255));
-
-        player.draw(window);
+        window.clear(sf::Color(64, 64, 64));
 
         for (auto &tile : tileGroup) {
             tile.draw(window);
         }
+
+        player.draw(window);
 
         window.display();
     }
