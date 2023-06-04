@@ -181,7 +181,7 @@ void loadLevel(std::string map,
 
                 if (line[collom_index] == 't') { // t - tile
                     tileGroup.push_back(Tile(
-                        sf::Color::Black,
+                        sf::Color(0, 0, 0),
                         sf::Vector2f(48.0f, 48.0f),
                         sf::Vector2f(x, y)));
                 } else if (line[collom_index] == 'p') { // p - player
@@ -226,7 +226,7 @@ int main() {
               tileGroup);
 
     Player player(
-        sf::Color::White,                               // player color
+        sf::Color(255, 255, 255),                       // player color
         225.0f,                                         // player speed
         sf::Vector2f(48.0f, 48.0f),                     // player size
         sf::Vector2f(playerPositionX, playerPositionY), // player position
