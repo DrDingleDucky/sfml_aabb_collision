@@ -93,9 +93,7 @@ private:
             direction.x = 0.0f;
         }
 
-        rect.move(sf::Vector2f(
-            direction.x * deltaTime * speed,
-            0.0f));
+        rect.move(sf::Vector2f(direction.x * deltaTime * speed, 0.0f));
     }
 
     void horizontalCollisions(std::vector<Tile> &tileGroup)
@@ -142,9 +140,7 @@ private:
             direction.y = 0.0f;
         }
 
-        rect.move(sf::Vector2f(
-            0.0f,
-            direction.y * deltaTime * speed));
+        rect.move(sf::Vector2f(0.0f, direction.y * deltaTime * speed));
     }
 
     void verticalCollisions(std::vector<Tile> &tileGroup)
@@ -288,7 +284,7 @@ int main()
     while (window.isOpen())
     {
         sf::Event event;
-        
+
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed ||
